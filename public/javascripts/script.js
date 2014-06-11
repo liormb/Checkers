@@ -1,30 +1,37 @@
+// Checkers Game
 
-var board = new Checkers();
-var squareWidth = squareHeight = 80;
+// =================================
+//   Global Variables & Functions
+// =================================
+
 var pieceLeftPosition, pieceTopPosition;
+var squareWidth = squareHeight = 80;
 var piecePadding = '7 7';
-
 var audio = {
 	pieceMove: new Audio('../assets/mp3/piece-move.mp3'),
 	piecePicked: new Audio('../assets/mp3/piece-picked.mp3')
 };
 
+// Adding diff comparison method to Array prototype
+// Returning the values that are not included in the target Array
+// Exp. [1,2,3,4].diff([1,4]) --> returning [2,3] 
 Array.prototype.diff = function(a) {
-    return this.filter(function(i) {return a.indexOf(i) < 0;});
+  return this.filter(function(i){ return a.indexOf(i) < 0; });
 };
 
-var squareNumber = function(square){
-	var value = square[0].toUpperCase().charCodeAt() - 64;
-	return value + (square[1] - 1) * 8;
-};
-
+// Return an Array with only its uniq values
 function onlyUnique(value, index, self) { 
   return self.indexOf(value) === index;
 }
 
+// Rules for sorting Array from the smallest to its biggest
 function sortFunc(a, b){
 	return (a - b);
 }
+
+// =================================
+//               Piece
+// =================================
 
 // Piece Constractor
 // creating new piece and adding a draggable & droppable functinality
@@ -59,7 +66,6 @@ Piece.prototype.create = function(){
 					tolerance: 'intersect',
 					drop: function(event, ui){
 						self.move();
-						//$(this).droppable('disable');
 						ui.draggable.position({of: $(this), at: piecePadding});
 					},
 					over: function(event, ui){
@@ -107,6 +113,8 @@ Piece.prototype.create = function(){
     }
 	});
 };
+
+// Move a piece from one place to another and "eat" opponent pieces
 Piece.prototype.move = function(){
 	var trails = [];
 	var factor = (this.kind === "light") ? 1 : -1;
@@ -140,6 +148,8 @@ Piece.prototype.move = function(){
 		board.squares[newPos].position = newPos;
 	}
 };
+
+// Check if a user drop position is legal
 Piece.prototype.legalMoves = function(position, moves){
 	var factor = (this.kind === "light") ? 1: -1;
 	var validMoves = (moves) ? moves.slice(0) : [this.position];
@@ -173,6 +183,8 @@ Piece.prototype.legalMoves = function(position, moves){
 	}
 	return validMoves.filter(onlyUnique);
 };
+
+// Determined which squares are valid for a move
 Piece.prototype.trail = function(end, arr){
 	var legalMoves = this.legalMoves();
 	var factor = (this.kind === "light") ? 1: -1;
@@ -192,54 +204,21 @@ Piece.prototype.trail = function(end, arr){
 	}
 	return moves.filter(onlyUnique);
 };
+
+// Remove a piece from array
 Piece.prototype.destroy = function() {
 	$('#square-'+this.position+' #piece').remove();
 };
 
-// the CheckersBoard Constractor
+
+// =================================
+//             Checkers
+// =================================
+
+// Checkers Constractor
 function Checkers() {
 	this.squares = [];
 }
-
-Checkers.prototype.movePiece = function(fromSquare, toSquare) {
-	var fromPosition = squareNumber(fromSquare);
-	var toPosition = squareNumber(toSquare);
-	var difference = toPosition - fromPosition;
-	var distance = Math.abs(difference);
-	var jump = (distance >= 10) ? true : false;
-	var kind = board.squares[fromPosition].kind
-	var legal = false;
-
-	// check if the move is legal
-	if ((difference > 0 && kind == "light") || (difference < 0 && kind == "dark")) {
-		if (jump) {
-			if (distance == 14 || distance == 18){
-				var middlePiecePosition = Math.min(fromPosition, toPosition) + distance/2;
-				if (board.squares[middlePiecePosition] && board.squares[middlePiecePosition].kind != kind){
-					legal = true;
-				}
-			}
-		} else if (distance == 7 || distance == 9) {
-			legal = true;
-		}
-	}
-
-	if (legal) {
-		board.squares[toPosition] = new Piece(kind, toPosition); 
-		board.squares[toPosition].create();
-
-		board.squares[fromPosition].destroy();
-		board.squares[fromPosition] = "";
-
-		if (jump && board.squares[middlePiecePosition]) { 
-			board.squares[middlePiecePosition].destroy();
-			board.squares[middlePiecePosition] = "";
-		}
-	} else {
-		console.log("Ilegal Move!");
-	}
-	return legal;
-};
 
 // setting up a new game board by:
 // 1. adding 64 square div's to the board
@@ -256,7 +235,9 @@ Checkers.prototype.newGame = function() {
 			var piece;
 			
 			$('#checker-board').append('<div id="square-'+position+'" class="square"></div>');
-			//$('#checker-board').append('<div id="square-'+position+'" class="square"><p class="number">'+position+'</p></div>');
+
+			// Adding numbers to each square for development purposes
+			// $('#checker-board').append('<div id="square-'+position+'" class="square"><p class="number">'+position+'</p></div>');
 			
 			if ((row%2 == 0 && col%2 != 0) || (row%2 != 0 && col%2 == 0)) 
 				$('#square-' + position).addClass('black-square black');
@@ -279,6 +260,9 @@ Checkers.prototype.newGame = function() {
 	}
 };
 
+var board = new Checkers();
+
+// Start playing...
 $(function(){
 	board.newGame();
 });
