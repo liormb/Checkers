@@ -52,7 +52,7 @@ body {
 	height: 64px;
 	border-radius: 32px;
   box-shadow: 2px 2px 2px 1px rgba(160,160,160,.3);
-  z-index: 9999;
+  z-index: 99;
 }
 .light-piece {
 	border: 4px solid red;
@@ -70,9 +70,8 @@ body {
   -o-background-size: 70%;
   background-size: 70%;
 }
-.light-piece:hover,
-.dark-piece:hover {
-	z-index: 99999;
+.ui-draggable-dragging {
+	z-index: 9999;
 }
 .trail,
 .hover-trail {

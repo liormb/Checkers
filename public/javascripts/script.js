@@ -7,6 +7,8 @@
 var pieceLeftPosition, pieceTopPosition;
 var squareWidth = squareHeight = 80;
 var piecePadding = '7 7';
+
+// Loading audio files
 var audio = {
 	pieceMove: new Audio('../assets/mp3/piece-move.mp3'),
 	piecePicked: new Audio('../assets/mp3/piece-picked.mp3')
@@ -43,6 +45,8 @@ function Piece(kind, position){
 Piece.prototype.create = function(){
 	var self = this;
 	$('#square-'+this.position).append('<div id="piece" class="'+this.kind+'-piece"></div>');
+
+	// Draggable
 	$('#square-'+this.position+' .'+this.kind+'-piece').draggable({
 		cursor: 'move',
 		revert: true,
@@ -60,6 +64,7 @@ Piece.prototype.create = function(){
 			for (var i=1; i < validMoves.length; i++){
 				$target = $('#square-'+validMoves[i]);
 				
+				// Droppable
 				$target.droppable({
 					accept: $(this),
 					hoverClass: "hover-trail",
@@ -77,6 +82,7 @@ Piece.prototype.create = function(){
 
 						if (!bool) $('#square-'+current).addClass('trail');
 
+						// conditions when auto-trail gets into action
 						if (((diff < 7 || (diff > 9 && diff < 14) || diff > 18) && !bool) || bool || (current - lastSquare)*factor < 0 ||
 							 ((diff === 14 || diff === 18) && (!board.squares[diff/2]))){
 							var trail = self.trail(current);
@@ -103,7 +109,7 @@ Piece.prototype.create = function(){
 							current = self.position;
 						}
 					}
-				});
+				}); // Droppable
 			}
     },
     stop: function(event, ui){
@@ -111,7 +117,7 @@ Piece.prototype.create = function(){
 				.droppable("destroy")
 				.removeClass('trail');
     }
-	});
+	}); // Draggable
 };
 
 // Move a piece from one place to another and "eat" opponent pieces
