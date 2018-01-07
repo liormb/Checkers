@@ -8,12 +8,6 @@ var pieceLeftPosition, pieceTopPosition;
 var squareWidth = squareHeight = 80;
 var piecePadding = '7 7';
 
-// Loading audio files
-var audio = {
-	pieceMove: new Audio('../assets/mp3/piece-move.mp3'),
-	piecePicked: new Audio('../assets/mp3/piece-picked.mp3')
-};
-
 // Adding diff comparison method to Array prototype
 // Returning the values that are not included in the target Array
 // Exp. [1,2,3,4].diff([1,4]) --> returning [2,3] 
@@ -141,7 +135,9 @@ Piece.prototype.move = function(){
 			var $piece = $('#square-'+oldPos+' #piece');
 
 			$('#square-'+newPos).append($piece);
-			if (target % 1 === 0) audio.piecePicked.play();
+			if (target % 1 === 0) document.querySelector('.picked-mp3').play().then(function() {
+                // Automatic playback started!
+            });
 			$('#square-'+target+' #piece').effect("explode", 250, function(e){
 				$(this).remove();
 			});
@@ -149,7 +145,9 @@ Piece.prototype.move = function(){
 			board.squares[newPos] = board.squares[oldPos];
 			board.squares[oldPos] = "";
 			if (target % 1 === 0) board.squares[target] = "";
-			audio.pieceMove.play();
+            document.querySelector('.moved-mp3').play().then(function() {
+                // Automatic playback started!
+            });
 		}
 		board.squares[newPos].position = newPos;
 	}
